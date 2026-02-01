@@ -1,14 +1,14 @@
-// --- GLOBAL DATA & SUPABASE ---
+/* ==========================================
+   1. GLOBAL CONFIG & DATA
+   ========================================== */
 const SUPABASE_URL = "https://frjcefugnvitexxcated.supabase.co";
 const SUPABASE_KEY = "sb_publishable_iymHBHXzWCXmXI4yUfQ_XQ__5EW47HJ";
 const AI_KEY = "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";
 let sb = null;
-try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error("DB Error"); }
 
 let cart = [], selectedItem = null, selectedQty = 1, orderType = "", tableNum = "", userAddress = "", delCharge = 0, chkStep = 1, dealChoices = [], currentFlavorStep = 0, isQRScan = false, kitchenInterval = null, secretClickCount = 0, aiChatHistory = [];
 let currentKitchenFilter = 'ALL';
-const RIDERS = ["Ramzan", "Abdurehman", "Abu Bakar", "Atif", "Ahsan"];
-const LOYALTY_PRIZES = ["Pan Pizza (S)", "Zinger Burger", "Club Sandwich", "Loaded Fries", "6pcs Wings", "Chipotle Wrap"];
 
 const menuData = {
     "Starter 🍟": [
@@ -128,59 +128,71 @@ const dealsData = [
     { name: "04 PIZZA DEAL", desc: "1 Large Extreme Pizza + 1L Drink", price: 1999, badge: "DELIVERY", flavorsNeeded: [{label: "Extreme Flavor", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1L Drink"] }
 ];
 
-// --- APP INITIALIZATION ---
-window.onload = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('table')) { 
-        isQRScan = true; tableNum = urlParams.get('table').toUpperCase(); 
-        document.getElementById('gateway-table-id').innerText = tableNum; 
-        document.getElementById('gateway-table-note').style.display = 'block'; 
-    }
-    renderPublicMenu(); 
-    renderPublicDeals(); 
-    renderCategoryBar(); 
-    renderLoyaltyCard();
-};
-
-// --- CORE APP FUNCTIONS ---
-function enterApp(target) { 
-    playClick('thud'); 
-    document.getElementById('gateway-screen').style.display = 'none'; 
-    document.getElementById('top-sticky-container').style.display = 'flex'; 
-    document.getElementById('ai-chat-bubble').style.display = 'flex';
-    if(target === 'deals') switchTab('deals'); else switchTab('menu'); 
+/* ==========================================
+   2. CORE UTILITIES (The "Click Fixers")
+   ========================================== */
+function playClick(type = 'pop') { 
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine';
+    if(type === 'pop') osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+    else if(type === 'thud') osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime); osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
 }
 
-function exitToGateway() { 
-    document.getElementById('gateway-screen').style.display = 'flex'; 
-    document.getElementById('top-sticky-container').style.display = 'none'; 
-    setScrollLock(false); 
+function setScrollLock(lock) {
+    if(lock) document.body.classList.add('modal-active');
+    else document.body.classList.remove('modal-active');
+}
+
+function closeModals() {
+    const list = ['modal-overlay', 'welcome-overlay', 'flavor-overlay', 'size-overlay', 'admin-login-overlay', 'tracking-overlay', 'upsell-overlay', 'loyalty-setup-overlay', 'manual-order-overlay'];
+    list.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
+    setScrollLock(false);
+}
+
+/* ==========================================
+   3. APP NAVIGATION
+   ========================================== */
+function enterApp(target) {
+    playClick('thud');
+    document.getElementById('gateway-screen').style.display = 'none';
+    document.getElementById('top-sticky-container').style.display = 'flex';
+    document.getElementById('ai-chat-bubble').style.display = 'flex';
+    if(target === 'deals') switchTab('deals'); else switchTab('menu');
+}
+
+function exitToGateway() {
+    playClick('pop');
+    document.getElementById('gateway-screen').style.display = 'flex';
+    document.getElementById('top-sticky-container').style.display = 'none';
+    setScrollLock(false);
 }
 
 function switchTab(tab) {
-    document.getElementById('menu-container').style.display = (tab === 'menu' ? 'block' : 'none');
-    document.getElementById('deals-container').style.display = (tab === 'deals' ? 'block' : 'none');
-    document.getElementById('tab-menu').classList.toggle('active', tab === 'menu');
-    document.getElementById('tab-deals').classList.toggle('active', tab === 'deals');
+    const isMenu = tab === 'menu';
+    document.getElementById('menu-container').style.display = isMenu ? 'block' : 'none';
+    document.getElementById('deals-container').style.display = isMenu ? 'none' : 'block';
+    document.getElementById('tab-menu').classList.toggle('active', isMenu);
+    document.getElementById('tab-deals').classList.toggle('active', !isMenu);
+    if(isMenu) renderPublicMenu(); else renderPublicDeals();
 }
 
-// --- RENDERING MENU & DEALS ---
+/* ==========================================
+   4. RENDERING & UI
+   ========================================== */
 function renderPublicMenu(filterText = "") {
     const mC = document.getElementById('menu-container'); mC.innerHTML = "";
     const search = filterText.toLowerCase();
     for (let cat in menuData) {
         if (cat === "Pan/Premium") continue;
-        const filteredItems = menuData[cat].filter(item => item.name.toLowerCase().includes(search));
-        if (filteredItems.length > 0) {
-            let title = document.createElement('div'); title.className = 'section-title'; title.innerText = cat; 
-            title.id = "cat-" + cat.replace(/\s+/g, '-'); mC.appendChild(title);
-            let grid = document.createElement('div'); grid.className = 'grid';
-            filteredItems.forEach(item => {
-                let b = document.createElement('div'); b.className = 'btn btn-3d';
-                b.innerHTML = `<div class="item-label-box"><div>${item.name}</div><div class="price-tag">${typeof item.price === 'object' ? 'PICK SIZE' : 'Rs '+item.price}</div></div>`;
-                b.onclick = () => openOrderFlow(item); grid.appendChild(b);
+        const filtered = menuData[cat].filter(i => i.name.toLowerCase().includes(search));
+        if (filtered.length > 0) {
+            let html = `<div class="section-title" id="cat-${cat.replace(/\s+/g, '-')}">${cat}</div><div class="grid">`;
+            filtered.forEach(item => {
+                html += `<div class="btn btn-3d" onclick='openOrderFlow(${JSON.stringify(item)})'><div class="item-label-box"><div>${item.name}</div><div class="price-tag">${typeof item.price === 'object' ? 'PICK SIZE' : 'Rs '+item.price}</div></div></div>`;
             });
-            mC.appendChild(grid);
+            mC.innerHTML += html + `</div>`;
         }
     }
 }
@@ -201,12 +213,13 @@ function renderCategoryBar() {
     });
 }
 
-// --- ORDER FLOW & CHECKOUT ---
+/* ==========================================
+   5. ORDER FLOW LOGIC
+   ========================================== */
 function openOrderFlow(item) {
-    selectedItem = JSON.parse(JSON.stringify(item)); dealChoices = []; currentFlavorStep = 0;
-    if (selectedItem.flavorsNeeded) {
-        startFlavorSelection();
-    } else if (item.price && typeof item.price === 'object') {
+    playClick('pop'); selectedItem = JSON.parse(JSON.stringify(item)); dealChoices = []; currentFlavorStep = 0;
+    if (selectedItem.flavorsNeeded) startFlavorSelection();
+    else if (item.price && typeof item.price === 'object') {
         const sizeGrid = document.getElementById('size-grid'); sizeGrid.innerHTML = '';
         for (let s in item.price) {
             let sBtn = document.createElement('div'); sBtn.className = 'btn btn-3d'; sBtn.innerHTML = `<div>${s} - Rs ${item.price[s]}</div>`;
@@ -217,14 +230,13 @@ function openOrderFlow(item) {
     } else openQtyModal();
 }
 
-function openQtyModal() { document.getElementById('modal-item-name').innerText = selectedItem.name; document.getElementById('modal-overlay').style.display='flex'; }
+function openQtyModal() { document.getElementById('modal-item-name').innerText = selectedItem.name; setQty(1); document.getElementById('modal-overlay').style.display='flex'; setScrollLock(true); }
+function setQty(q) { playClick('pop'); selectedQty = q; document.querySelectorAll('.qty-btn').forEach((b, i) => { b.classList.toggle('active', (q===5?i===1:i===(q-1))); }); }
 
 function addToCartFinal() {
     const note = document.getElementById('special-note').value;
     cart.push({...selectedItem, qty: selectedQty, note: note});
-    updateCartBar();
-    closeModals();
-    checkUpsell(selectedItem);
+    updateCartBar(); closeModals(); checkUpsell(selectedItem);
 }
 
 function updateCartBar() {
@@ -236,34 +248,30 @@ function updateCartBar() {
 
 function startCheckout() {
     document.getElementById('overlay-screen').style.display = 'block';
-    renderServiceTypeStep();
-}
-
-function renderServiceTypeStep() {
-    document.getElementById('checkout-content').innerHTML = `<h3>Where do you want your food?</h3>
-    <button class="confirm-btn" onclick="orderType='Dine-In'; finalSubmitOrder()">Dine-In</button>
-    <button class="confirm-btn" style="background:gray" onclick="orderType='Takeaway'; finalSubmitOrder()">Takeaway</button>`;
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    document.getElementById('checkout-content').innerHTML = `<h3>Order Summary</h3><button class="confirm-btn" onclick="finalSubmitOrder()">CONFIRM WHATSAPP</button>`;
 }
 
 async function finalSubmitOrder() {
-    const itemsText = cart.map(i => `${i.qty}x ${i.name}`).join("\n");
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    const waMsg = encodeURIComponent(`*OVEN X ORDER*\n\n${itemsText}\n\nTotal: Rs ${total}`);
-    window.location.href = `https://wa.me/923001450301?text=${waMsg}`;
+    const text = encodeURIComponent(`*OVEN X ORDER*\n\n${cart.map(i=>i.qty+'x '+i.name).join('\n')}`);
+    window.location.href = `https://wa.me/923001450301?text=${text}`;
 }
 
-// --- AI LOGIC ---
-function toggleAIChat() { const win = document.getElementById('ai-chat-window'); win.style.display = (win.style.display === 'flex' ? 'none' : 'flex'); }
+/* ==========================================
+   6. AI LOGIC
+   ========================================== */
+function toggleAIChat() { toggleAIChat_Logic(); } // Mapping for your HTML
+function toggleAIChat_Logic() { const win = document.getElementById('ai-chat-window'); win.style.display = (win.style.display === 'flex' ? 'none' : 'flex'); }
 function appendAIMsg(role, text) { const box = document.getElementById('ai-msg-container'); const div = document.createElement('div'); div.className = `ai-msg ai-msg-${role}`; div.innerText = text; box.appendChild(div); box.scrollTop = box.scrollHeight; }
 
 async function sendToAI() {
     const input = document.getElementById('ai-input-box'); const val = input.value.trim(); if(!val) return;
     appendAIMsg('user', val); input.value = "";
-    const systemPrompt = `Waiter Oven X. MENU: ${JSON.stringify(menuData)}. Friendly. ADD: [[{"action":"add","item":"Name","price":0}]] CHECKOUT: [[{"action":"checkout"}]]`;
+    const prompt = `Human Waiter Oven X. MENU: ${JSON.stringify(menuData)}. Friendly. mix Urdu/English. ADD: [[{"action":"add","item":"Name","price":0}]] CHECKOUT: [[{"action":"checkout"}]]`;
     try {
         const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ "model": "google/gemini-2.0-flash-001", "messages": [{ "role": "system", "content": systemPrompt }, ...aiChatHistory, { "role": "user", "content": val }] })
+            body: JSON.stringify({ "model": "google/gemini-2.0-flash-001", "messages": [{ "role": "system", "content": prompt }, ...aiChatHistory, { "role": "user", "content": val }] })
         });
         const data = await resp.json(); const aiRaw = data.choices[0].message.content; const parts = aiRaw.split('[[');
         appendAIMsg('bot', parts[0].trim());
@@ -275,6 +283,11 @@ async function sendToAI() {
     } catch(e) { appendAIMsg('bot', "Busy..."); }
 }
 
-function handleSearch(v) { renderPublicMenu(v); }
-function closeModals() { document.querySelectorAll('.modal-overlay, #modal-overlay, #flavor-overlay, #size-overlay, #welcome-overlay').forEach(m => m.style.display='none'); setScrollLock(false); }
-function renderLoyaltyCard() { /* (Keep your original logic) */ }
+/* ==========================================
+   7. INITIALIZATION
+ ========================================== */
+window.onload = () => {
+    renderPublicMenu(); 
+    renderCategoryBar();
+    renderLoyaltyCard();
+};
