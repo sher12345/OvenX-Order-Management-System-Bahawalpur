@@ -1,1 +1,29 @@
-
+:root { 
+    --red: #8b0000; --dark-red: #5e0000; --orange: #f37021; --dark-orange: #b34e12;
+    --white: #ffffff; --bg-body: #fff9f5; --radius-bubble: 25px;
+    --wa-green: #25D366; --wa-dark: #1a9648; --gold: #d4af37;
+    --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body { background: var(--bg-body) !important; color: #333 !important; font-family: sans-serif; margin: 0; }
+#gateway-screen { position: fixed; inset: 0; background: radial-gradient(circle, #2c0000, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4000; color: white; text-align: center; overflow-y: auto; }
+.btn-3d { transition: transform 0.1s; cursor: pointer; border: none; }
+.btn-3d:active { transform: translateY(4px); }
+.loyalty-card { background: rgba(10, 10, 10, 0.95); border-radius: 35px; padding: 25px; border: 2px solid var(--gold); width: 90%; max-width: 380px; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
+.stamp-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.stamp-circle { width: 42px; height: 42px; border-radius: 50%; border: 2px dashed rgba(212, 175, 55, 0.4); display: flex; align-items: center; justify-content: center; color: rgba(212, 175, 55, 0.3); }
+.stamp-circle.filled { background: var(--gold-gradient); border: 2px solid #fff; color: #000; box-shadow: 0 0 20px var(--gold); }
+header { background: var(--red); color: white; padding: 12px; border-bottom: 6px solid var(--orange); display: flex; justify-content: space-between; align-items: center; }
+.tab-bar { background: #fff; padding: 10px; display: flex; gap: 10px; }
+.tab-item.active { background: var(--red); color: white; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { background-color: #eee; border-radius: 25px; min-height: 160px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background-size: cover; border: 3px solid #fff; }
+.item-label-box { background: white; padding: 12px; text-align: center; }
+#cart-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; background: var(--red); color: white; padding: 12px 20px; border-radius: 50px; display: none; justify-content: space-between; align-items: center; z-index: 1000; }
+#ai-chat-bubble { position: fixed; bottom: 85px; right: 15px; width: 60px; height: 60px; background: var(--orange); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 8000; border: 3px solid white; cursor: pointer; }
+#ai-chat-window { position: fixed; bottom: 160px; right: 15px; width: 330px; height: 480px; background: white; border-radius: 30px; display: none; flex-direction: column; box-shadow: 0 15px 50px rgba(0,0,0,0.4); z-index: 8001; overflow: hidden; border: 1px solid #ddd; }
+.ai-msg { padding: 12px; border-radius: 20px; max-width: 85%; font-size: 14px; font-weight: 600; }
+.ai-msg-bot { background: #f0f0f0; align-self: flex-start; border-bottom-left-radius: 2px; }
+.ai-msg-user { background: var(--orange); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+.kitchen-modal { background: white; border-radius: 35px; width: 98%; max-width: 1200px; height: 95vh; display: flex; flex-direction: column; overflow: hidden; }
+/* ... (Rest of your original CSS variables) ... */
