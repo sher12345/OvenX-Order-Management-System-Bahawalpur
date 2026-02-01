@@ -11,20 +11,122 @@ const RIDERS = ["Ramzan", "Abdurehman", "Abu Bakar", "Atif", "Ahsan"];
 const LOYALTY_PRIZES = ["Pan Pizza (S)", "Zinger Burger", "Club Sandwich", "Loaded Fries", "6pcs Wings", "Chipotle Wrap"];
 
 const menuData = {
-    "Starter 🍟": [{name: "Plain Fries", price: {Reg: 230, Large: 300}}, {name: "Loaded Fries", price: 599}, {name: "Pizza Fries", price: 720}, {name: "Dragon Shots", price: 399}, {name: "Oven Baked Wings", price: {Reg: 399, Large: 780}}, {name: "Peri-Peri Wings", price: {M: 399, L: 780}}, {name: "Hot Wings", price: {M: 399, L: 780}}, {name: "Honey Chili Wings", price: {M: 449, L: 880}}, {name: "Cheese Sticks", price: 449}, {name: "Meat Sticks", price: 449}, {name: "Nuggets", price: {M: 350, L: 650}}],
-    "Sandwich 🥪": [{name: "Health Harvest", price: 599}, {name: "Khameera Sandwich", price: 699}, {name: "Club Sandwich", price: 599}],
-    "Fried Burger 🍔": [{name: "Chicken Patty Burger", price: 299}, {name: "Zinger Burger", price: 420}, {name: "Mighty Burger", price: 699}, {name: "Chipotle Burger", price: 649}, {name: "Crispy Jalapeno", price: 549}, {name: "Stuff Jalapeno", price: 649}],
-    "Grilled Burger ♨️": [{name: "CM Grilled", price: 499}, {name: "Smokey Grilled", price: 550}, {name: "Peri Peri Grilled", price: 749}, {name: "Drizzler X", price: 749}, {name: "Jalapeno Blaze", price: 749}, {name: "Mexi Fiesta", price: 749}],
-    "Pan Pizza 🍕": [{name: "Chicken Tikka", price: {S:499, M:999, L:1549}}, {name: "Chicken Fajita", price: {S:499, M:999, L:1549}}, {name: "Chicken Supreme", price: {S:499, M:999, L:1549}}, {name: "Cheese Lover", price: {S:499, M:999, L:1549}}, {name: "Veg Lover", price: {S:499, M:999, L:1549}}, {name: "Sicilian Pizza", price: {S:499, M:999, L:1549}}],
-    "Premium Pizza 🌟": [{name: "BBQ Pizza", price: {M:1199, L:1699}}, {name: "Creamy Dreamy", price: {M:1199, L:1699}}, {name: "OvenX Special Premium", price: {M:1199, L:1699}}, {name: "Bonfire Pizza", price: {M:1199, L:1699}}],
-    "Deep Dish Pizza 🍲": [{name: "Mild Butter", price: {M:1749, L:2449}}, {name: "OvenX Special Deep Dish", price: {M:1749, L:2449}}],
-    "Extreme Pizza 🌶️": [{name: "Extreme Peri Peri", price: {M:1499, L:2049}}, {name: "Extreme Flaming Kabab", price: {M:1499, L:2049}}, {name: "Crispy Extreme", price: {M:1499, L:2049}}],
-    "Craft My Own Pizza 🎨": [{name: "Kabab Crust", price: {Med: 1399, Large: 1799}}, {name: "Crown Crust", price: {Med: 1399, Large: 1799}}, {name: "Cheese Crust", price: {Med: 1399, Large: 1799}}, {name: "Crusti Thin", price: 1699}],
-    "Platters 🍱": [{name: "Khameera Sandwich Platter", price: 699}, {name: "Calzone Platter", price: 899}, {name: "Behari Platter", price: 949}],
-    "Pasta 🍝": [{name: "Alfredo Pasta", price: 699}, {name: "OvenX Flaming Pasta", price: 650}, {name: "Fire Kissed Pasta", price: 699}, {name: "X-Special Pasta", price: 749}],
-    "Wraps & Rolls 🌯": [{name: "Chipotle Wrap", price: 699}, {name: "BBQ Wrap", price: 599}, {name: "Donar Kabab", price: 749}, {name: "Crunch Wrap", price: 449}, {name: "Zingeratha Roll", price: 449}, {name: "Paratha Roll", price: 449}, {name: "Malai Roll", price: 449}, {name: "Behari Roll", price: 749}, {name: "Peri Peri Wrap", price: 749}],
-    "Bar Menu 🥤": [{name: "Coke Buddy", price: 130}, {name: "Sprite Buddy", price: 130}, {name: "Coke 1 Liter", price: 190}, {name: "Next Cola 1 Liter", price: 170}, {name: "Coke 1.5L", price: 230}, {name: "Sprite 1.5L", price: 230}, {name: "Water Small", price: 99}, {name: "Water Large", price: 170}]
+    "Starter 🍟": [
+        {name: "Plain Fries", price: {Reg: 230, Large: 300}}, 
+        {name: "Loaded Fries", price: 599}, 
+        {name: "Pizza Fries", price: 720}, 
+        {name: "Dragon Shots", price: 399}, 
+        {name: "Oven Baked Wings", price: {Reg: 399, Large: 780}}, 
+        {name: "Peri-Peri Wings", price: {M: 399, L: 780}}, 
+        {name: "Hot Wings", price: {M: 399, L: 780}}, 
+        {name: "Honey Chili Wings", price: {M: 449, L: 880}}, 
+        {name: "Cheese Sticks", price: 449}, 
+        {name: "Meat Sticks", price: 449}, 
+        {name: "Nuggets", price: {M: 350, L: 650}}
+    ],
+    "Sandwich 🥪": [
+        {name: "Health Harvest", price: 599}, 
+        {name: "Khameera Sandwich", price: 699}, 
+        {name: "Club Sandwich", price: 599}
+    ],
+    "Fried Burger 🍔": [
+        {name: "Chicken Patty Burger", price: 299}, 
+        {name: "Zinger Burger", price: 420}, 
+        {name: "Mighty Burger", price: 699}, 
+        {name: "Chipotle Burger", price: 649}, 
+        {name: "Crispy Jalapeno", price: 549}, 
+        {name: "Stuff Jalapeno", price: 649}
+    ],
+    "Grilled Burger ♨️": [
+        {name: "CM Grilled", price: 499}, 
+        {name: "Smokey Grilled", price: 550}, 
+        {name: "Peri Peri Grilled", price: 749}, 
+        {name: "Drizzler X", price: 749}, 
+        {name: "Jalapeno Blaze", price: 749}, 
+        {name: "Mexi Fiesta", price: 749}
+    ],
+    "Pan Pizza 🍕": [
+        {name: "Chicken Tikka", price: {S:499, M:999, L:1549}}, 
+        {name: "Chicken Fajita", price: {S:499, M:999, L:1549}}, 
+        {name: "Chicken Supreme", price: {S:499, M:999, L:1549}}, 
+        {name: "Cheese Lover", price: {S:499, M:999, L:1549}}, 
+        {name: "Veg Lover", price: {S:499, M:999, L:1549}}, 
+        {name: "Sicilian Pizza", price: {S:499, M:999, L:1549}}
+    ],
+    "Premium Pizza 🌟": [
+        {name: "BBQ Pizza", price: {M:1199, L:1699}}, 
+        {name: "Creamy Dreamy", price: {M:1199, L:1699}}, 
+        {name: "OvenX Special Premium", price: {M:1199, L:1699}}, 
+        {name: "Bonfire Pizza", price: {M:1199, L:1699}}
+    ],
+    "Deep Dish Pizza 🍲": [
+        {name: "Mild Butter", price: {M:1749, L:2449}}, 
+        {name: "OvenX Special Deep Dish", price: {M:1749, L:2449}}
+    ],
+    "Extreme Pizza 🌶️": [
+        {name: "Extreme Peri Peri", price: {M:1499, L:2049}}, 
+        {name: "Extreme Flaming Kabab", price: {M:1499, L:2049}}, 
+        {name: "Crispy Extreme", price: {M:1499, L:2049}}
+    ],
+    "Craft My Own Pizza 🎨": [
+        {name: "Kabab Crust", price: {Med: 1399, Large: 1799}}, 
+        {name: "Crown Crust", price: {Med: 1399, Large: 1799}}, 
+        {name: "Cheese Crust", price: {Med: 1399, Large: 1799}}, 
+        {name: "Crusti Thin", price: 1699}
+    ],
+    "Platters 🍱": [
+        {name: "Khameera Sandwich Platter", price: 699}, 
+        {name: "Calzone Platter", price: 899}, 
+        {name: "Behari Platter", price: 949}
+    ],
+    "Pasta 🍝": [
+        {name: "Alfredo Pasta", price: 699}, 
+        {name: "OvenX Flaming Pasta", price: 650}, 
+        {name: "Fire Kissed Pasta", price: 699}, 
+        {name: "X-Special Pasta", price: 749}
+    ],
+    "Wraps & Rolls 🌯": [
+        {name: "Chipotle Wrap", price: 699}, 
+        {name: "BBQ Wrap", price: 599}, 
+        {name: "Donar Kabab", price: 749}, 
+        {name: "Crunch Wrap", price: 449}, 
+        {name: "Zingeratha Roll", price: 449}, 
+        {name: "Paratha Roll", price: 449}, 
+        {name: "Malai Roll", price: 449}, 
+        {name: "Behari Roll", price: 749}, 
+        {name: "Peri Peri Wrap", price: 749}
+    ],
+    "Bar Menu 🥤": [
+        {name: "Coke Buddy", price: 130}, 
+        {name: "Sprite Buddy", price: 130}, 
+        {name: "Coke 1 Liter", price: 190}, 
+        {name: "Next Cola 1 Liter", price: 170}, 
+        {name: "Coke 1.5L", price: 230}, 
+        {name: "Sprite 1.5L", price: 230}, 
+        {name: "Water Small", price: 99}, 
+        {name: "Water Large", price: 170}
+    ]
 };
+
+// Create a combined category for Family Feast and generic deals
+menuData["Pan/Premium"] = [...menuData["Pan Pizza 🍕"], ...menuData["Premium Pizza 🌟"]];
+
+// --- COMPLETE DEALS DATA ---
+const dealsData = [
+    { name: "Midnight Deal 1", desc: "2x Med Extreme Pizzas + 1.5L Drink", price: 2699, badge: "HOT DEAL", flavorsNeeded: [{label: "Pizza 1", cat: "Extreme Pizza 🌶️"}, {label: "Pizza 2", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1.5L Soft Drink"] },
+    { name: "Midnight Deal 2", desc: "1x Large wings + 2x Large Pan Pizzas + 1.5L Drink", price: 3249, badge: "SAVER", flavorsNeeded: [{label: "Pizza 1", cat: "Pan Pizza 🍕"}, {label: "Pizza 2", cat: "Pan Pizza 🍕"}], fixedItems: ["1x Large Hot Wings", "1.5L Soft Drink"] },
+    { name: "Midnight Deal 3", desc: "1x Large wings + 2x Large Premium Pizzas + 1.5L Drink", price: 3649, badge: "PREMIUM", flavorsNeeded: [{label: "Pizza 1", cat: "Premium Pizza 🌟"}, {label: "Pizza 2", cat: "Premium Pizza 🌟"}], fixedItems: ["1x Large Hot Wings", "1.5L Soft Drink"] },
+    { name: "Midnight Deal 4", desc: "1x Med Extreme Pizza + 1x Large Extreme Pizza + 1.5L Drink", price: 3149, badge: "MIX DEAL", flavorsNeeded: [{label: "Medium Pizza", cat: "Extreme Pizza 🌶️"}, {label: "Large Pizza", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1.5L Soft Drink"] },
+    { name: "Family Feast", desc: "2 Med Pizzas + 2 Zingers + 1L Drink + 6 Wings", price: 2299, badge: "FAMILY", flavorsNeeded: [{label: "Pizza 1", cat: "Pan/Premium"}, {label: "Pizza 2", cat: "Pan/Premium"}], fixedItems: ["2x Zinger Burgers", "1L Drink", "6x Wings"] },
+    { name: "Extreme Buddy", desc: "1 Medium Extreme Pizza + Free 1L Drink", price: 1449, badge: "BEST SELLER", flavorsNeeded: [{label: "Pizza Flavor", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1L Drink"] },
+    { name: "Burger Deal 1", desc: "2 Zingers + 1 Reg Fries + 2 Drinks", price: 999, badge: "DELIVERY", fixedItems: ["2x Zinger Burgers", "1x Regular Fries", "2x Drinks"] },
+    { name: "Burger Deal 2", desc: "1 Zinger + 1 Reg Fries + 1 345ml Drink + 2 Wings", price: 990, badge: "DELIVERY", fixedItems: ["1x Zinger Burger", "1x Regular Fries", "1x 345ml Buddy Drink", "2x Pcs Wings"] },
+    { name: "Burger Deal 3", desc: "4 Classic Zingers + 2 Reg Fries + 1L Drink + 6 Wings", price: 1990, badge: "DELIVERY", fixedItems: ["4x Classic Zinger Burgers", "2x Regular Fries", "1x 1 Liter Drink", "6x Pcs Wings"] },
+    { name: "01 PIZZA DEAL", desc: "1 Large Pizza (Pan) + 1L Drink", price: 1299, badge: "DELIVERY", flavorsNeeded: [{label: "Pizza", cat: "Pan Pizza 🍕"}], fixedItems: ["1L Drink"] },
+    { name: "02 PIZZA DEAL", desc: "1 Large Pizza (Premium) + 1L Drink", price: 1499, badge: "DELIVERY", flavorsNeeded: [{label: "Pizza", cat: "Premium Pizza 🌟"}], fixedItems: ["1L Drink"] },
+    { name: "03 PIZZA DEAL", desc: "1 Large Crown Pizza + 1L Drink", price: 1599, badge: "DELIVERY", flavorsNeeded: [{label: "Crown Flavor", cat: "Craft My Own Pizza 🎨"}], fixedItems: ["1L Drink"] },
+    { name: "04 PIZZA DEAL", desc: "1 Large Extreme Pizza + 1L Drink", price: 1999, badge: "DELIVERY", flavorsNeeded: [{label: "Extreme Flavor", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1L Drink"] }
+];
 
 // --- APP INITIALIZATION ---
 window.onload = () => {
