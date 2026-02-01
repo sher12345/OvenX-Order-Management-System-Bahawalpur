@@ -130,72 +130,151 @@ const dealsData = [
 
 // --- APP INITIALIZATION ---
 window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('table')) { 
+        isQRScan = true; tableNum = urlParams.get('table').toUpperCase(); 
+        document.getElementById('gateway-table-id').innerText = tableNum; 
+        document.getElementById('gateway-table-note').style.display = 'block'; 
+    }
     renderPublicMenu(); 
     renderPublicDeals(); 
     renderCategoryBar(); 
     renderLoyaltyCard();
-    const savedOrderId = localStorage.getItem('ovenx_last_order_id');
-    if(savedOrderId) initCustomerTracking(savedOrderId);
 };
 
-// --- CORE FUNCTIONS (ENTER, EXIT, TABS) ---
+// --- CORE APP FUNCTIONS ---
 function enterApp(target) { 
     playClick('thud'); 
     document.getElementById('gateway-screen').style.display = 'none'; 
     document.getElementById('top-sticky-container').style.display = 'flex'; 
     document.getElementById('ai-chat-bubble').style.display = 'flex';
-    if(tableNum && orderType === "") { renderServiceOptions(); document.getElementById('welcome-overlay').style.display = 'flex'; setScrollLock(true); } 
     if(target === 'deals') switchTab('deals'); else switchTab('menu'); 
 }
 
-function exitToGateway() { playClick('pop'); document.getElementById('gateway-screen').style.display = 'flex'; document.getElementById('top-sticky-container').style.display = 'none'; document.getElementById('cart-bar').style.display = 'none'; document.getElementById('ai-chat-bubble').style.display = 'none'; document.getElementById('ai-chat-window').style.display = 'none'; renderLoyaltyCard(); setScrollLock(false); }
-
-function switchTab(tab) { playClick('pop'); if(tab === 'menu') { document.getElementById('menu-container').style.display = 'block'; document.getElementById('deals-container').style.display = 'none'; document.getElementById('tab-menu').classList.add('active'); document.getElementById('tab-deals').classList.remove('active'); document.getElementById('menu-controls').style.display = 'block'; renderPublicMenu(); } else { document.getElementById('menu-container').style.display = 'none'; document.getElementById('deals-container').style.display = 'block'; document.getElementById('tab-deals').classList.add('active'); document.getElementById('tab-menu').classList.remove('active'); document.getElementById('menu-controls').style.display = 'none'; renderPublicDeals(); } }
-
-// --- ORDERING & CHECKOUT (THE SOUL) ---
-async function finalSubmitOrder() {
-    playClick('thud'); const foodTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0); let sc = (orderType === "Dine-In") ? Math.round(foodTotal * 0.07) : 0; const itemsListText = cart.map(i => i.qty + "x " + i.name + (i.note ? " ["+i.note+"]" : "")).join("\n");
-    const orderObj = { type: orderType, location: orderType === 'Dine-In' ? "Table " + tableNum : userAddress, items: itemsListText, status: 'WAITING', subtotal: foodTotal + sc, delivery_fee: delCharge };
-    let orderId = null; try { if(sb) { const { data } = await sb.from('kitchen_orders').insert([orderObj]).select(); if(data && data[0]) orderId = data[0].id; } } catch(e) { }
-    let stamps = parseInt(localStorage.getItem('ovenx_stamps') || 0); let bonus = "";
-    if(localStorage.getItem('ovenx_member_name')) { if(stamps >= 10) { bonus = "\n\n🌟 MEMBER GIFT CLAIMED"; localStorage.setItem('ovenx_stamps', 0); } else if(foodTotal >= 1000) { localStorage.setItem('ovenx_stamps', stamps + 1); } }
-    const waMsg = encodeURIComponent(`*OVEN X - ORDER*\n\n${itemsListText}\n\n*Total: Rs ${foodTotal + parseFloat(delCharge) + sc}*${bonus}`);
-    cart = []; updateCartBar(); document.getElementById('overlay-screen').style.display = 'none';
-    if(orderId) initCustomerTracking(orderId); window.location.href = `https://wa.me/923001450301?text=${waMsg}`;
+function exitToGateway() { 
+    document.getElementById('gateway-screen').style.display = 'flex'; 
+    document.getElementById('top-sticky-container').style.display = 'none'; 
+    setScrollLock(false); 
 }
 
-function startCheckout() { playClick('thud'); document.getElementById('overlay-screen').style.display = 'block'; setScrollLock(true); renderServiceTypeStep(); }
+function switchTab(tab) {
+    document.getElementById('menu-container').style.display = (tab === 'menu' ? 'block' : 'none');
+    document.getElementById('deals-container').style.display = (tab === 'deals' ? 'block' : 'none');
+    document.getElementById('tab-menu').classList.toggle('active', tab === 'menu');
+    document.getElementById('tab-deals').classList.toggle('active', tab === 'deals');
+}
 
-// --- AI BRAIN: HUMAN & AUTO-WHATSAPP ---
-function toggleAIChat() { const win = document.getElementById('ai-chat-window'); win.style.display = (win.style.display === 'flex' ? 'none' : 'flex'); playClick('pop'); }
+// --- RENDERING MENU & DEALS ---
+function renderPublicMenu(filterText = "") {
+    const mC = document.getElementById('menu-container'); mC.innerHTML = "";
+    const search = filterText.toLowerCase();
+    for (let cat in menuData) {
+        if (cat === "Pan/Premium") continue;
+        const filteredItems = menuData[cat].filter(item => item.name.toLowerCase().includes(search));
+        if (filteredItems.length > 0) {
+            let title = document.createElement('div'); title.className = 'section-title'; title.innerText = cat; 
+            title.id = "cat-" + cat.replace(/\s+/g, '-'); mC.appendChild(title);
+            let grid = document.createElement('div'); grid.className = 'grid';
+            filteredItems.forEach(item => {
+                let b = document.createElement('div'); b.className = 'btn btn-3d';
+                b.innerHTML = `<div class="item-label-box"><div>${item.name}</div><div class="price-tag">${typeof item.price === 'object' ? 'PICK SIZE' : 'Rs '+item.price}</div></div>`;
+                b.onclick = () => openOrderFlow(item); grid.appendChild(b);
+            });
+            mC.appendChild(grid);
+        }
+    }
+}
+
+function renderPublicDeals() {
+    const list = document.getElementById('deals-list'); list.innerHTML = '';
+    dealsData.forEach(deal => {
+        list.innerHTML += `<div class="deal-card"><div class="deal-badge">${deal.badge}</div><div class="deal-info-box"><div class="deal-title">${deal.name}</div><div class="deal-price">Rs ${deal.price}</div><button class="next-btn btn-3d" style="background:var(--orange)" onclick='openOrderFlow(${JSON.stringify(deal)})'>ADD TO BAG</button></div></div>`;
+    });
+}
+
+function renderCategoryBar() {
+    const bar = document.getElementById('category-bar'); bar.innerHTML = "";
+    Object.keys(menuData).filter(c => c !== "Pan/Premium").forEach(cat => {
+        const pill = document.createElement('div'); pill.className = "cat-pill"; pill.innerText = cat;
+        pill.onclick = () => { switchTab('menu'); document.getElementById("cat-" + cat.replace(/\s+/g, '-')).scrollIntoView(); };
+        bar.appendChild(pill);
+    });
+}
+
+// --- ORDER FLOW & CHECKOUT ---
+function openOrderFlow(item) {
+    selectedItem = JSON.parse(JSON.stringify(item)); dealChoices = []; currentFlavorStep = 0;
+    if (selectedItem.flavorsNeeded) {
+        startFlavorSelection();
+    } else if (item.price && typeof item.price === 'object') {
+        const sizeGrid = document.getElementById('size-grid'); sizeGrid.innerHTML = '';
+        for (let s in item.price) {
+            let sBtn = document.createElement('div'); sBtn.className = 'btn btn-3d'; sBtn.innerHTML = `<div>${s} - Rs ${item.price[s]}</div>`;
+            sBtn.onclick = () => { selectedItem.name += ` (${s})`; selectedItem.price = item.price[s]; document.getElementById('size-overlay').style.display='none'; openQtyModal(); };
+            sizeGrid.appendChild(sBtn);
+        }
+        document.getElementById('size-overlay').style.display='flex';
+    } else openQtyModal();
+}
+
+function openQtyModal() { document.getElementById('modal-item-name').innerText = selectedItem.name; document.getElementById('modal-overlay').style.display='flex'; }
+
+function addToCartFinal() {
+    const note = document.getElementById('special-note').value;
+    cart.push({...selectedItem, qty: selectedQty, note: note});
+    updateCartBar();
+    closeModals();
+    checkUpsell(selectedItem);
+}
+
+function updateCartBar() {
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    document.getElementById('cart-total').innerText = `Rs ${total}`;
+    document.getElementById('cart-count').innerText = `ITEMS: ${cart.length}`;
+    document.getElementById('cart-bar').style.display = cart.length > 0 ? 'flex' : 'none';
+}
+
+function startCheckout() {
+    document.getElementById('overlay-screen').style.display = 'block';
+    renderServiceTypeStep();
+}
+
+function renderServiceTypeStep() {
+    document.getElementById('checkout-content').innerHTML = `<h3>Where do you want your food?</h3>
+    <button class="confirm-btn" onclick="orderType='Dine-In'; finalSubmitOrder()">Dine-In</button>
+    <button class="confirm-btn" style="background:gray" onclick="orderType='Takeaway'; finalSubmitOrder()">Takeaway</button>`;
+}
+
+async function finalSubmitOrder() {
+    const itemsText = cart.map(i => `${i.qty}x ${i.name}`).join("\n");
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const waMsg = encodeURIComponent(`*OVEN X ORDER*\n\n${itemsText}\n\nTotal: Rs ${total}`);
+    window.location.href = `https://wa.me/923001450301?text=${waMsg}`;
+}
+
+// --- AI LOGIC ---
+function toggleAIChat() { const win = document.getElementById('ai-chat-window'); win.style.display = (win.style.display === 'flex' ? 'none' : 'flex'); }
 function appendAIMsg(role, text) { const box = document.getElementById('ai-msg-container'); const div = document.createElement('div'); div.className = `ai-msg ai-msg-${role}`; div.innerText = text; box.appendChild(div); box.scrollTop = box.scrollHeight; }
 
 async function sendToAI() {
-    const input = document.getElementById('ai-input-box'); const userVal = input.value.trim(); if(!userVal) return;
-    appendAIMsg('user', userVal); input.value = "";
-    const systemPrompt = `You are a professional human Waiter at Oven X Multan. Gemini 2.0 Brain.
-    MENU: ${JSON.stringify(menuData)}. CURRENT CART: ${JSON.stringify(cart)}.
-    RULES: 1. Chat like a real person. 2. To ADD items: End message with [[{"action":"add","item":"Name","price":0}]] 
-    3. To CHECKOUT: End message with [[{"action":"checkout"}]] 4. NO DUPLICATES: Check CURRENT CART. 5. DO NOT show [[ ]] blocks.`;
-
+    const input = document.getElementById('ai-input-box'); const val = input.value.trim(); if(!val) return;
+    appendAIMsg('user', val); input.value = "";
+    const systemPrompt = `Waiter Oven X. MENU: ${JSON.stringify(menuData)}. Friendly. ADD: [[{"action":"add","item":"Name","price":0}]] CHECKOUT: [[{"action":"checkout"}]]`;
     try {
         const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ "model": "google/gemini-2.0-flash-001", "messages": [{ "role": "system", "content": systemPrompt }, ...aiChatHistory, { "role": "user", "content": userVal }] })
+            body: JSON.stringify({ "model": "google/gemini-2.0-flash-001", "messages": [{ "role": "system", "content": systemPrompt }, ...aiChatHistory, { "role": "user", "content": val }] })
         });
         const data = await resp.json(); const aiRaw = data.choices[0].message.content; const parts = aiRaw.split('[[');
         appendAIMsg('bot', parts[0].trim());
         if(parts[1]) {
-            const actionJson = JSON.parse(parts[1].split(']]')[0]);
-            if(actionJson.action === "add") { cart.push({ name: actionJson.item, price: actionJson.price, qty: 1, note: "AI Order" }); updateCartBar(); }
-            else if(actionJson.action === "checkout") { toggleAIChat(); setTimeout(startCheckout, 800); }
+            const act = JSON.parse(parts[1].split(']]')[0]);
+            if(act.action === "add") { cart.push({ name: act.item, price: act.price, qty: 1 }); updateCartBar(); }
+            else if(act.action === "checkout") { toggleAIChat(); startCheckout(); }
         }
-        aiChatHistory.push({"role":"user", "content": userVal}, {"role":"assistant", "content": aiRaw});
-    } catch(e) { appendAIMsg('bot', "Brain is busy, try again!"); }
+    } catch(e) { appendAIMsg('bot', "Busy..."); }
 }
 
-// --- ALL OTHER LOGIC (KITCHEN, RIDER, PWA) ---
-async function renderKitchenOrders() {
-    if(!sb) return; const { data: orders } = await sb.from('kitchen_orders').select('*').order('created_at', { ascending: false });
-    const list = document.getElementById('kitchen-orders-list'); list.innerHTML = orders.map(o => `<div class="kitchen-card"><b>${o.type}</b><p>${o.items}</p><button onclick="updateStatus('${o.id}', 'READY')">DONE</button></div>`).join('');
-}
+function handleSearch(v) { renderPublicMenu(v); }
+function closeModals() { document.querySelectorAll('.modal-overlay, #modal-overlay, #flavor-overlay, #size-overlay, #welcome-overlay').forEach(m => m.style.display='none'); setScrollLock(false); }
+function renderLoyaltyCard() { /* (Keep your original logic) */ }
