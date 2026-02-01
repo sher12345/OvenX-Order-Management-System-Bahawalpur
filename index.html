@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#8b0000">
     <link rel="manifest" href='data:application/manifest+json,{"name":"Oven X Official","short_name":"OvenX","start_url":".","display":"standalone","background_color":"#8b0000","theme_color":"#8b0000","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/5973/5973307.png","sizes":"512x512","type":"image/png","purpose":"any"}]}'>
-
     <title>Oven X - Official Order System</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,6 +17,7 @@
 <div id="gateway-screen">
     <div class="bouncing-logo"><p class="gateway-logo">OVEN <span>X</span></p></div>
     <div id="gateway-table-note">🎉 WELCOME! TABLE <span id="gateway-table-id"></span> 🎉</div>
+
     <div id="loyalty-display" style="display:none;" class="loyalty-card">
         <div class="loyalty-header">
             <span class="gold-label">OVEN X CLUB</span>
@@ -29,7 +29,9 @@
         </div>
         <p id="loyalty-msg" class="loyalty-footer"></p>
     </div>
+    
     <button id="join-club-btn" onclick="openLoyaltySetup()" class="gate-btn btn-gold btn-3d">👑 Join Oven X Club & Win Free Meals!</button>
+
     <div class="gateway-options">
         <button class="gate-btn btn-3d btn-orange" onclick="enterApp('deals')">🔥 Best Deals!</button>
         <button class="gate-btn btn-3d btn-red" onclick="enterApp('menu')">📖 Full Menu</button>
@@ -69,24 +71,125 @@
         <span>OVEN X MASTER AI</span>
         <span onclick="toggleAIChat()" style="cursor:pointer; font-size: 20px;">×</span>
     </div>
-    <div id="ai-msg-container"></div>
+    <div id="ai-msg-container">
+        <div class="ai-msg ai-msg-bot">Assalam-o-Alaikum! 😊 I am the Oven X Master AI Waiter. How can I help you order today?</div>
+    </div>
     <div class="ai-input-wrap">
         <input type="text" id="ai-input-box" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') sendToAI()">
         <button onclick="sendToAI()" style="background: var(--orange); border: none; color: white; width: 45px; height: 45px; border-radius: 50%; font-weight: bold; cursor: pointer;">➔</button>
     </div>
 </div>
 
-<div id="manual-order-overlay"><div class="modal"><h2 style="color:var(--red); font-weight:900;">Manual Order 📝</h2><select id="man-type" class="big-input"><option value="Dine-In">Dine-In</option><option value="Takeaway">Takeaway</option><option value="Delivery">Delivery</option></select><input type="text" id="man-loc" placeholder="Table # or Address" class="big-input"><textarea id="man-items" placeholder="Items List" class="big-input"></textarea><div style="display:flex; gap:10px;"><input type="number" id="man-sub" placeholder="Subtotal" class="big-input"><input type="number" id="man-fee" placeholder="Del. Fee" class="big-input"></div><button class="confirm-btn btn-3d" style="background:var(--red);" onclick="saveManualOrder()">SAVE TO KITCHEN</button><button onclick="closeModals()" style="margin-top:15px;">CANCEL</button></div></div>
-<div id="loyalty-setup-overlay"><div class="modal modal-gold"><h2 class="gold-label">ACTIVATE CLUB CARD 👑</h2><input type="text" id="clubName" placeholder="Full Name" class="premium-input"><input type="number" id="clubPhone" placeholder="WhatsApp Number" class="premium-input"><button class="gate-btn btn-gold btn-3d" style="width:100%; margin-top:20px;" onclick="saveClubProfile()">ACTIVATE NOW 🚀</button></div></div>
-<div id="admin-login-overlay"><div class="modal"><h2>Kitchen Access</h2><input type="text" id="adminPassword" placeholder="Secret Code" class="big-input" oninput="handlePassInput(this)"><button class="next-btn btn-3d" style="background:var(--red); margin-top:20px;" onclick="verifyAdmin()">UNLOCK</button></div></div>
-<div id="kitchen-panel-overlay"><div class="kitchen-modal"><div class="kitchen-header"><h2>LIVE KITCHEN</h2><div><button onclick="downloadCustomerData()">DB 📥</button><button onclick="openManualOrderModal()">➕</button><button onclick="closeKitchenPanel()">EXIT</button></div></div><div style="display:flex; gap:10px; padding:10px;"><div class="k-tab active" onclick="setKitchenFilter('ALL')">ALL</div><div class="k-tab" onclick="setKitchenFilter('DELIVERY')">DELIVERY</div></div><div class="kitchen-content-wrapper"><div id="kitchen-orders-list"></div><div id="rider-audit-sidebar"><h3>Rider Audit</h3><div id="rider-audit-selection"></div><div id="audit-result-box" class="audit-card"></div></div></div></div></div>
-<div id="flavor-overlay"><div class="modal"><h3 id="flavor-title">Flavor</h3><div class="grid" id="flavor-grid"></div></div></div>
-<div id="welcome-overlay"><div class="modal"><h2>Where to?</h2><div id="service-options-container"></div></div></div>
-<div id="modal-overlay"><div class="modal"><h3 id="modal-item-name"></h3><div class="qty-btns"><button class="qty-btn" onclick="setQty(1)">1</button><button class="qty-btn active" onclick="setQty(5)">5+</button></div><textarea id="special-note" placeholder="Notes?"></textarea><button onclick="addToCartFinal()" class="confirm-btn">ADD</button></div></div>
-<div id="size-overlay"><div class="modal"><h3>Select Size</h3><div class="grid" id="size-grid"></div></div></div>
-<div id="overlay-screen"><button onclick="handleBack()" class="header-back-btn">← BACK</button><div id="checkout-content"></div></div>
-<div id="tracking-overlay"><div class="modal"><span id="track-icon" class="tracking-status-icon">📩</span><h2 id="track-main-status">Sent!</h2><div id="step-waiting" class="tracking-step active">Sent</div><div id="step-preparing" class="tracking-step">Prep</div><div id="step-ready" class="tracking-step">Ready</div><button onclick="clearTracking()">CLOSE</button></div></div>
-<div id="upsell-overlay"><div class="modal"><span id="upsell-icon">🍟</span><h2 id="upsell-title">HUNGRY?</h2><p id="upsell-desc"></p><button id="upsell-yes-btn" class="confirm-btn">YES</button></div></div>
+<div id="manual-order-overlay">
+    <div class="modal">
+        <h2 style="color:var(--red); font-weight:900;">Manual Order 📝</h2>
+        <select id="man-type" class="big-input">
+            <option value="Dine-In">Dine-In</option>
+            <option value="Takeaway">Takeaway</option>
+            <option value="Delivery">Delivery</option>
+        </select>
+        <input type="text" id="man-loc" placeholder="Table # or Address" class="big-input">
+        <textarea id="man-items" placeholder="Items List (e.g. 1x Pizza, 2x Zinger)" class="big-input" style="height:100px;"></textarea>
+        <div style="display:flex; gap:10px;">
+           <input type="number" id="man-sub" placeholder="Subtotal" class="big-input">
+           <input type="number" id="man-fee" placeholder="Del. Fee" class="big-input">
+        </div>
+        <button class="confirm-btn btn-3d" style="background:var(--red);" onclick="saveManualOrder()">SAVE TO KITCHEN</button>
+        <button onclick="document.getElementById('manual-order-overlay').style.display='none'; setScrollLock(false);" style="margin-top:15px; border:none; background:none; color:gray; font-weight:bold;">CANCEL</button>
+    </div>
+</div>
+
+<div id="loyalty-setup-overlay">
+    <div class="modal modal-gold">
+        <h2 class="gold-label">ACTIVATE CLUB CARD 👑</h2>
+        <p style="color:#aaa; font-size:13px; margin:15px 0;">Collect 10 stamps (Order Rs 1000+) to win a mystery free meal!</p>
+        <input type="text" id="clubName" placeholder="Full Name" class="premium-input">
+        <input type="number" id="clubPhone" placeholder="WhatsApp Number" class="premium-input">
+        <button class="gate-btn btn-gold btn-3d" style="width:100%; margin-top:20px;" onclick="saveClubProfile()">ACTIVATE NOW 🚀</button>
+        <button onclick="document.getElementById('loyalty-setup-overlay').style.display='none'; setScrollLock(false);" style="margin-top:15px; color:#666; font-weight:bold; background:none; border:none;">CANCEL</button>
+    </div>
+</div>
+
+<div id="admin-login-overlay">
+    <div class="modal">
+        <h2 style="color:var(--red); font-weight:900;">Kitchen Access</h2>
+        <input type="text" id="adminPassword" placeholder="Secret Code" class="big-input" oninput="handlePassInput(this)" style="text-align:center; letter-spacing:4px; font-size:22px;">
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="next-btn btn-3d" style="background:#888;" onclick="closeAdminLogin()">BACK</button>
+            <button class="next-btn btn-3d" style="background:var(--red);" onclick="verifyAdmin()">UNLOCK</button>
+        </div>
+    </div>
+</div>
+
+<div id="kitchen-panel-overlay">
+    <div class="kitchen-modal">
+        <div class="kitchen-header">
+            <h2 style="margin:0; color:var(--red); font-weight:900;">LIVE KITCHEN</h2>
+            <div style="display:flex; gap:10px;">
+                <button class="header-back-btn btn-3d" style="background:var(--wa-green);" onclick="downloadCustomerData()">CUSTOMERS 📥</button>
+                <button class="header-back-btn btn-3d" style="background:#444;" onclick="openManualOrderModal()">MANUAL ORDER ➕</button>
+                <button class="header-back-btn btn-3d" onclick="closeKitchenPanel()">EXIT</button>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; padding:15px; background:white; border-bottom:1px solid #eee;">
+            <div class="k-tab active" id="k-tab-all" onclick="setKitchenFilter('ALL')">ALL ORDERS</div>
+            <div class="k-tab" id="k-tab-del" onclick="setKitchenFilter('DELIVERY')">DELIVERY ONLY 🚚</div>
+        </div>
+        <div class="kitchen-content-wrapper">
+            <div id="kitchen-orders-list"></div>
+            <div id="rider-audit-sidebar">
+                <h3 style="margin-top:0; color:var(--red);">Rider Audit</h3>
+                <div id="rider-audit-selection" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:20px;"></div>
+                <div id="audit-result-box" style="display:none;">
+                    <div class="audit-card">
+                        <div id="audit-rider-name" style="font-size:22px; font-weight:900; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">-</div>
+                        <div class="audit-stat"><span>Orders Completed:</span> <b id="audit-count">0</b></div>
+                        <div class="audit-stat"><span>Cash Collected:</span> <b id="audit-cash">Rs 0</b></div>
+                        <div class="audit-stat"><span>Rider Fees:</span> <b id="audit-fees">Rs 0</b></div>
+                        <hr style="opacity:0.2;">
+                        <div class="audit-stat"><span>Net to Shop:</span> <b id="audit-net">Rs 0</b></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px;">
+            <button class="next-btn btn-3d" style="background:#444; flex:1;" onclick="clearReadyOrders()">CLEAR READY (DINE-IN)</button>
+            <button id="clear-del-btn" class="next-btn btn-3d" style="background:var(--red); display:none; flex:1;" onclick="clearDeliveriesWithPassword()">CLEAR ALL DELIVERIES</button>
+        </div>
+    </div>
+</div>
+
+<div id="flavor-overlay"><div class="modal"><h3 id="flavor-title" style="color:var(--red); font-weight:900;">Pick Flavor</h3><div class="grid" id="flavor-grid"></div><button onclick="closeModals()" style="margin-top:25px; border:none; background:none; color:#bbb; font-weight:900;">CANCEL</button></div></div>
+<div id="welcome-overlay"><div class="modal"><h2 style="color:var(--red); font-weight:900;">HEY THERE! 👋</h2><p id="welcome-msg">Where do you want your food?</p><div class="input-group" id="service-options-container"></div></div></div>
+<div id="modal-overlay"><div class="modal"><h3 id="modal-item-name" style="color:var(--red); font-weight:900; margin-top:0;"></h3><p style="font-weight:bold; color:#777;">How many?</p><div class="qty-btns"><button class="qty-btn btn-3d" onclick="setQty(1)">1</button><button class="qty-btn btn-3d" onclick="setQty(2)">2</button><button class="qty-btn btn-3d" onclick="setQty(3)">3</button><button class="qty-btn btn-3d" onclick="setQty(4)">4</button><button class="qty-btn btn-3d active" onclick="setQty(5)">5+</button></div><textarea id="special-note" placeholder="Any special notes?"></textarea><div style="margin-top:25px; display:flex; gap:12px;"><button onclick="closeModals()" class="btn-3d" style="flex:1; padding:15px; border-radius:20px; background:#eee;">BACK</button><button onclick="addToCartFinal()" class="btn-3d" style="flex:1.5; padding:15px; border-radius:20px; background:var(--orange); color:white; font-weight:900; box-shadow:0 5px 0px var(--dark-orange);">ADD TO BAG</button></div></div></div>
+<div id="size-overlay"><div class="modal"><h3 style="font-weight:900;">Select Size</h3><div class="grid" id="size-grid"></div><button onclick="closeModals()" style="margin-top:20px; border:none; background:none; color:gray; font-weight:900;">CANCEL</button></div></div>
+<div id="overlay-screen"><button class="header-back-btn btn-3d" id="checkout-back-btn" style="margin-bottom:20px; padding:12px 25px;">← BACK</button><div id="checkout-content"></div></div>
+
+<div id="tracking-overlay">
+    <div class="modal">
+        <span id="track-icon" class="tracking-status-icon">📩</span>
+        <h2 id="track-main-status" style="color:var(--red); font-weight:900; margin-bottom:5px;">Order Sent!</h2>
+        <p id="track-sub-status" style="font-weight:bold; color:#777;">Waiting for confirmation...</p>
+        <div style="margin:30px 0; text-align:left; padding-left:15%;">
+            <div id="step-waiting" class="tracking-step active">✅ Sent to Kitchen</div>
+            <div id="step-preparing" class="tracking-step">🔘 Chef is Preparing</div>
+            <div id="step-ready" class="tracking-step">🔘 Food is Ready!</div>
+        </div>
+        <button onclick="clearTracking()" class="btn-3d" style="width:100%; padding:15px; border-radius:20px; background:#eee; font-weight:900;">CLOSE TRACKER</button>
+    </div>
+</div>
+
+<div id="upsell-overlay">
+    <div class="modal" style="border:4px solid var(--orange);">
+        <span id="upsell-icon" style="font-size:60px;">🍟🥤</span>
+        <h2 id="upsell-title" style="color:var(--red); font-weight:900; margin:10px 0;">HUNGRY?</h2>
+        <div id="upsell-body-content">
+            <p id="upsell-desc" style="font-weight:bold; color:#555; margin-bottom:20px;"></p>
+            <button id="upsell-yes-btn" class="confirm-btn btn-3d" style="margin-top:0; background:var(--orange); box-shadow: 0 6px 0px var(--dark-orange);">YES, ADD IT! 🚀</button>
+        </div>
+        <button onclick="document.getElementById('upsell-overlay').style.display='none'; setScrollLock(false);" style="margin-top:20px; border:none; background:none; color:#bbb; font-weight:900; width:100%;">NO THANKS, CONTINUE</button>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
