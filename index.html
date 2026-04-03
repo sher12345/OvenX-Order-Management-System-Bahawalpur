@@ -1,179 +1,298 @@
-
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oven X — Leave a Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Outfit', system-ui, sans-serif; }
-  .screen { display: none; }
-  .screen.active { display: flex; flex-direction: column; }
-
-  .star-btn { background: none; border: none; cursor: pointer; padding: 4px; transition: transform 0.1s; }
-  .star-btn:active { transform: scale(0.88); }
-  .star-icon { width: 52px; height: 52px; }
-
-  .cta-btn {
-    width: 100%; padding: 18px; border: none; border-radius: 16px;
-    font-size: 17px; font-weight: 700; cursor: pointer;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  /* Samsung Galaxy Tab A6 10.1" optimizations:
+     - Resolution: 1920x1200 (16:10)
+     - PPI: 224
+     - Physical size: ~10.1 inches
+  */
+  
+  html {
+    font-size: 18px; /* Base font size optimized for 10.1" viewing distance */
+  }
+  
+  body { 
+    background: #0d0000; 
+    min-height: 100vh; 
+    min-height: 100dvh;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
     font-family: 'Outfit', system-ui, sans-serif;
-    transition: transform 0.1s;
+    padding: 40px;
   }
-  .cta-btn:active { transform: scale(0.97); }
-  .btn-primary { background: #c0392b; color: white; }
-  .btn-google { background: white; color: #1a1a1a; border: 2px solid #e0e0e0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .btn-ghost { background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.2); }
-
-  .tag-btn {
-    padding: 10px 18px; border-radius: 30px; border: 1.5px solid rgba(255,255,255,0.25);
-    background: rgba(255,255,255,0.08); color: white; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Outfit', system-ui, sans-serif; transition: all 0.15s;
+  
+  .wrap { 
+    background: #1a0000; 
+    border-radius: 32px; 
+    padding: 60px 50px 50px; 
+    text-align: center; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    max-width: 720px; 
+    width: 100%; 
+    margin: 20px auto;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6);
   }
-  .tag-btn.selected { background: #f37021; border-color: #f37021; }
-</style>
-
-<div style="background:#1a0000; min-height:700px; border-radius:20px; overflow:hidden; position:relative;">
-
-  <div id="screen-idle" class="screen active" style="min-height:700px; align-items:center; justify-content:center; padding:40px 30px; text-align:center; flex-direction:column; gap:0;">
-    <div style="width:72px;height:72px;background:#c0392b;border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
-    </div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;">Oven X</div>
-    <h1 style="font-size:36px;font-weight:900;color:white;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;">How was<br>your meal?</h1>
-    <p style="color:rgba(255,255,255,0.5);font-size:16px;line-height:1.6;margin-bottom:40px;">Your feedback helps us serve you better and lets others discover us too.</p>
-    <button class="cta-btn btn-primary" onclick="goTo('screen-stars')" style="max-width:340px;">Rate Your Experience</button>
-    <button class="cta-btn btn-ghost" onclick="goTo('screen-idle')" style="max-width:340px;margin-top:12px;font-size:14px;padding:14px;">Maybe Later</button>
-  </div>
-
-  <div id="screen-stars" class="screen" style="min-height:700px; align-items:center; justify-content:center; padding:40px 30px; text-align:center; flex-direction:column;">
-    <div style="font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;">Step 1 of 2</div>
-    <h2 style="font-size:30px;font-weight:900;color:white;letter-spacing:-0.5px;margin-bottom:8px;">Tap to rate us</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:15px;margin-bottom:36px;">How many stars would you give Oven X?</p>
-
-    <div id="stars-row" style="display:flex;gap:8px;margin-bottom:16px;">
-      <button class="star-btn" onclick="setStars(1)"><svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" id="s1"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg></button>
-      <button class="star-btn" onclick="setStars(2)"><svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" id="s2"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg></button>
-      <button class="star-btn" onclick="setStars(3)"><svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" id="s3"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg></button>
-      <button class="star-btn" onclick="setStars(4)"><svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" id="s4"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg></button>
-      <button class="star-btn" onclick="setStars(5)"><svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" id="s5"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg></button>
-    </div>
-
-    <div id="star-label" style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:36px;min-height:24px;"></div>
-
-    <button id="stars-next-btn" class="cta-btn" style="max-width:340px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border:1.5px solid rgba(255,255,255,0.15);cursor:default;" disabled onclick="goToTags()">Next</button>
-    <button class="cta-btn btn-ghost" onclick="goTo('screen-idle')" style="max-width:340px;margin-top:12px;font-size:14px;padding:14px;">Back</button>
-  </div>
-
-  <div id="screen-tags" class="screen" style="min-height:700px; padding:40px 30px; text-align:center; flex-direction:column; align-items:center;">
-    <div style="font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;">Step 2 of 2</div>
-    <h2 id="tags-title" style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px;margin-bottom:8px;">What stood out?</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:15px;margin-bottom:28px;">Pick all that apply</p>
-    <div id="tags-container" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:32px;max-width:380px;"></div>
-    <button id="tags-next-btn" class="cta-btn btn-primary" style="max-width:340px;" onclick="goToGoogle()">Leave a Google Review</button>
-    <button class="cta-btn btn-ghost" onclick="goTo('screen-stars')" style="max-width:340px;margin-top:12px;font-size:14px;padding:14px;">Back</button>
-  </div>
-
-  <div id="screen-google" class="screen" style="min-height:700px; align-items:center; justify-content:center; padding:40px 30px; text-align:center; flex-direction:column;">
-    <div style="width:64px;height:64px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
-      <svg width="32" height="32" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-    </div>
-    <h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px;margin-bottom:10px;">Almost there!</h2>
-    <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7;margin-bottom:10px;">Tap below to open Google and post your review. It only takes 30 seconds!</p>
-    <div id="suggested-text-box" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:16px 18px;margin-bottom:28px;max-width:360px;text-align:left;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px;">Your highlights</div>
-      <p id="suggested-text" style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.6;"></p>
-    </div>
-    <button class="cta-btn btn-google" style="max-width:340px;" onclick="openGMB()">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Open Google Reviews
-    </button>
-    <button class="cta-btn btn-ghost" onclick="goTo('screen-idle')" style="max-width:340px;margin-top:12px;font-size:14px;padding:14px;">Done — Back to Start</button>
-  </div>
-
-  <div id="screen-low" class="screen" style="min-height:700px; align-items:center; justify-content:center; padding:40px 30px; text-align:center; flex-direction:column;">
-    <div style="width:64px;height:64px;background:rgba(192,57,43,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;border:1.5px solid rgba(192,57,43,0.4);">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f37021" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    </div>
-    <h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px;margin-bottom:10px;">We hear you.</h2>
-    <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7;margin-bottom:28px;">We are sorry your experience wasn't perfect. Your feedback goes directly to our manager so we can fix it right away.</p>
-    <button class="cta-btn btn-primary" style="max-width:340px;" onclick="goTo('screen-idle')">Thank You — Back to Start</button>
-  </div>
-
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;">
-    <span style="font-size:11px;color:rgba(255,255,255,0.15);letter-spacing:2px;text-transform:uppercase;">Oven X · theovenx.com</span>
-  </div>
-</div>
-
-<script>
-const PLACE_ID = 'ChIJm4LjHmEzOzkRUm9rNd7m2SA';
-const GMB_URL = 'https://search.google.com/local/writereview?placeid=' + PLACE_ID;
-
-let selectedStars = 0;
-let selectedTags = new Set();
-
-const positiveTags = ['Great food', 'Fast delivery', 'Fresh ingredients', 'Generous portions', 'Friendly staff', 'Perfect packaging', 'Great value', 'Will come again'];
-const negativeTags = ['Slow service', 'Cold food', 'Wrong order', 'Small portions', 'Packaging issue', 'Needs improvement'];
-
-const starLabels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'];
-const starColors = ['', '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#f37021'];
-
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function setStars(n) {
-  selectedStars = n;
-  for (let i = 1; i <= 5; i++) {
-    const s = document.getElementById('s' + i);
-    if (i <= n) {
-      s.setAttribute('fill', starColors[n]);
-      s.setAttribute('stroke', starColors[n]);
-    } else {
-      s.setAttribute('fill', 'none');
-      s.setAttribute('stroke', '#555');
+  
+  .icon-wrap {
+    width: 100px;
+    height: 100px;
+    background: #c0392b;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 30px rgba(192, 57, 43, 0.3);
+  }
+  
+  .icon-wrap svg {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .brand-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 16px;
+  }
+  
+  h1 {
+    font-size: 52px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 18px;
+  }
+  
+  .subtitle {
+    color: rgba(255,255,255,0.55);
+    font-size: 22px;
+    line-height: 1.5;
+    margin-bottom: 48px;
+    max-width: 480px;
+  }
+  
+  .qr-link {
+    background: white;
+    border-radius: 28px;
+    padding: 28px;
+    margin-bottom: 40px;
+    display: inline-block;
+    text-decoration: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .qr-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+  }
+  
+  .qr-link img {
+    display: block;
+    border-radius: 12px;
+    width: 320px;
+    height: 320px;
+  }
+  
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  .divider-line {
+    height: 1px;
+    width: 100px;
+    background: rgba(255,255,255,0.12);
+  }
+  
+  .divider-text {
+    font-size: 16px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  
+  .cta-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: white;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 24px 40px;
+    font-size: 22px;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  
+  .cta-button svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .stars {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .stars svg {
+    width: 28px;
+    height: 28px;
+    fill: #f37021;
+  }
+  
+  .help-text {
+    color: rgba(255,255,255,0.3);
+    font-size: 17px;
+    margin-bottom: 40px;
+  }
+  
+  .footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 32px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .footer-left {
+    text-align: left;
+  }
+  
+  .footer-logo {
+    font-size: 24px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+  
+  .footer-logo span {
+    color: #f37021;
+  }
+  
+  .footer-tagline {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 4px;
+  }
+  
+  .footer-right {
+    text-align: right;
+  }
+  
+  .footer-location, .footer-url {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 4px;
+  }
+  
+  /* Landscape orientation adjustments for Tab A6 */
+  @media (orientation: landscape) and (max-height: 800px) {
+    .wrap {
+      padding: 40px 50px;
+      max-width: 800px;
+    }
+    
+    h1 {
+      font-size: 44px;
+    }
+    
+    .qr-link img {
+      width: 260px;
+      height: 260px;
+    }
+    
+    .subtitle {
+      font-size: 20px;
+      margin-bottom: 32px;
     }
   }
-  document.getElementById('star-label').textContent = starLabels[n];
-  document.getElementById('star-label').style.color = starColors[n];
-  const btn = document.getElementById('stars-next-btn');
-  btn.disabled = false;
-  btn.style.background = '#c0392b';
-  btn.style.color = 'white';
-  btn.style.border = 'none';
-  btn.style.cursor = 'pointer';
-}
+  
+  /* Ensure touch targets are large enough for tablet (min 48px) */
+  a, button {
+    min-height: 48px;
+    min-width: 48px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
 
-function goToTags() {
-  if (!selectedStars) return;
-  selectedTags.clear();
-  const tags = selectedStars >= 4 ? positiveTags : negativeTags;
-  const title = selectedStars >= 4 ? 'What stood out?' : 'What went wrong?';
-  document.getElementById('tags-title').textContent = title;
-  const container = document.getElementById('tags-container');
-  container.innerHTML = '';
-  tags.forEach(tag => {
-    const btn = document.createElement('button');
-    btn.className = 'tag-btn';
-    btn.textContent = tag;
-    btn.onclick = () => {
-      if (selectedTags.has(tag)) { selectedTags.delete(tag); btn.classList.remove('selected'); }
-      else { selectedTags.add(tag); btn.classList.add('selected'); }
-    };
-    container.appendChild(btn);
-  });
-  goTo('screen-tags');
-}
+  <div class="icon-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+  </div>
 
-function goToGoogle() {
-  if (selectedStars <= 3) { goTo('screen-low'); return; }
-  const tags = Array.from(selectedTags);
-  let text = '';
-  if (tags.length > 0) text = tags.join(', ') + '.';
-  else text = 'Great experience overall!';
-  document.getElementById('suggested-text').textContent = text;
-  goTo('screen-google');
-}
+  <div class="brand-label">Oven X — Official</div>
+  <h1>Loved your meal?</h1>
+  <p class="subtitle">Scan with your phone camera and leave us a quick Google review. It only takes 30 seconds!</p>
 
-function openGMB() {
-  window.open(GMB_URL, '_blank');
-  setTimeout(() => goTo('screen-idle'), 1500);
-}
-</script>
+  <a href="https://search.google.com/local/writereview?placeid=ChIJm4LjHmEzOzkRUm9rNd7m2SA" target="_blank" class="qr-link">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=https://search.google.com/local/writereview?placeid=ChIJm4LjHmEzOzkRUm9rNd7m2SA&color=1a0000&bgcolor=ffffff&margin=2" width="320" height="320" alt="QR Code to Google Review">
+  </a>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">or tap below</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <a href="https://search.google.com/local/writereview?placeid=ChIJm4LjHmEzOzkRUm9rNd7m2SA" target="_blank" class="cta-button">
+    <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Write a Google Review
+  </a>
+
+  <div class="stars">
+    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+  </div>
+
+  <p class="help-text">Your review helps others discover us</p>
+
+  <div class="footer">
+    <div class="footer-left">
+      <div class="footer-logo">OVEN <span>X</span></div>
+      <div class="footer-tagline">Pizza, Burgers & Cafe</div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-location">Multan & Bahawalpur</div>
+      <div class="footer-url">theovenx.com</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
